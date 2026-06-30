@@ -8,6 +8,7 @@ members = [
     "hegemony-notification-plugins-workspace",
     "hegemony-notification-sdk",
     "hegemony-notification-shoutrrr-presets",
+    "hegemony-notification-webhook-presets",
 ]
 
 [[package]]
@@ -123,6 +124,17 @@ requires-dist = [{ name = "pydantic", specifier = ">=2.7" }]
 name = "hegemony-notification-shoutrrr-presets"
 version = "0.1.0"
 source = { editable = "plugins/notification_shoutrrr_presets" }
+dependencies = [
+    { name = "hegemony-notification-sdk" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "hegemony-notification-sdk", editable = "packages/notification_sdk" }]
+
+[[package]]
+name = "hegemony-notification-webhook-presets"
+version = "0.1.0"
+source = { editable = "plugins/notification_webhook_presets" }
 dependencies = [
     { name = "hegemony-notification-sdk" },
 ]
