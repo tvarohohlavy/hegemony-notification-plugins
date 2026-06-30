@@ -140,8 +140,7 @@ async def send(ctx: NotificationSendContext) -> None:
     if isinstance(title_template, str) and title_template.strip():
         msg["Subject"] = services.render_message(title_template, title=title, body=body)
     else:
-        subject_prefix = config.get("subject_prefix", "")
-        msg["Subject"] = f"{subject_prefix} {title}" if subject_prefix else title
+        msg["Subject"] = title
 
     body_template = config.get("body")
     if isinstance(body_template, str) and body_template.strip():
@@ -176,7 +175,6 @@ CONFIG_SCHEMA = {
         "to": {"type": "array", "items": {"type": "string"}, "title": "To"},
         "cc": {"type": "array", "items": {"type": "string"}, "title": "Cc"},
         "from": {"type": "string", "title": "From (optional)"},
-        "subject_prefix": {"type": "string", "title": "Subject prefix (optional)"},
         "smtp_host_ref": {"type": "string", "format": "secret-ref", "title": "SMTP host"},
         "smtp_port_ref": {"type": "string", "format": "secret-ref", "title": "SMTP port"},
         "smtp_username_ref": {"type": "string", "format": "secret-ref", "title": "SMTP username"},
