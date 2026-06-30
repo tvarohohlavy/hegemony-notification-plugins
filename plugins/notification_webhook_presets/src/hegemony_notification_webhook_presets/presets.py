@@ -4,12 +4,13 @@
 
 """Friendly presets for team-chat services reached via incoming webhooks.
 
-Each preset rewrites a small, user-friendly config onto a base transport's config:
+Both presets rewrite a small, user-friendly config onto the ``outgoing_webhook`` base
+transport (a plain HTTP POST) — no Shoutrrr binary required:
 
-- ``webex`` builds a Shoutrrr ``generic://`` URL for a Webex incoming webhook.
-- ``teams`` builds an ``outgoing_webhook`` config that POSTs an Adaptive Card to a
-  Microsoft Teams *Power Automate* "When a Teams webhook request is received" workflow
-  (the successor to the retired Office 365 connectors).
+- ``webex`` POSTs ``{"markdown": ...}`` to a Webex incoming webhook URL.
+- ``teams`` POSTs an Adaptive Card to a Microsoft Teams *Power Automate* "When a Teams
+  webhook request is received" workflow (the successor to the retired Office 365
+  connectors).
 
 ``build_config`` functions are pure and synchronous: string assembly only. Secret
 references pass through untouched for the base transport to resolve at send time.
@@ -23,6 +24,10 @@ from typing import Any
 
 # A secret-reference string field (the user pastes ``{{ secret('…') }}`` / ``{{ env('…') }}``).
 _SECRET_FIELD = {"type": "string", "format": "secret-ref"}
+
+# Webex incoming-webhook payload. ``{{ title }}`` / ``{{ body }}`` are rendered (and
+# JSON-escaped) by the outgoing_webhook transport; Webex renders the ``markdown`` field.
+_WEBEX_PAYLOAD_TEMPLATE = '{"markdown": "**{{ title }}**\\n\\n{{ body }}"}'
 
 # Adaptive Card posted to a Microsoft Teams Power Automate workflow. ``{{ title }}`` /
 # ``{{ body }}`` are rendered (and JSON-escaped) by the outgoing_webhook transport.
@@ -67,12 +72,12 @@ class Preset:
 
 
 def _webex(config: dict[str, Any]) -> dict[str, Any]:
-    # Shoutrrr generic webhook posting {"text": <message>} to the Webex incoming webhook.
+    # Plain HTTP POST of a markdown message to the Webex incoming webhook URL. The token
+    # may be a secret reference; the outgoing_webhook transport resolves it in the URL.
     return {
-        "url_secret": (
-            f"generic://webexapis.com/v1/webhooks/incoming/{config['webhook_token']}"
-            "?template=json&messagekey=text"
-        )
+        "url": f"https://webexapis.com/v1/webhooks/incoming/{config['webhook_token']}",
+        "method": "POST",
+        "payload_template": _WEBEX_PAYLOAD_TEMPLATE,
     }
 
 
@@ -93,8 +98,8 @@ PRESETS: tuple[Preset, ...] = (
     Preset(
         destination_type="webex",
         display_name="Webex",
-        description="Post to a Webex space via an incoming webhook (over Shoutrrr).",
-        base_transport="shoutrrr",
+        description="Post a markdown message to a Webex space via its incoming webhook.",
+        base_transport="outgoing_webhook",
         config_schema={
             "type": "object",
             "required": ["webhook_token"],

@@ -29,22 +29,24 @@ def _build(destination_type: str, config: dict[str, Any]) -> dict[str, Any]:
     return reg.presets[destination_type]["build_config"](config)
 
 
-def test_register_adds_webex_and_teams_over_correct_base_transports():
+def test_register_adds_webex_and_teams_over_outgoing_webhook():
     reg = FakeRegistry()
     plugin.register(reg)
     assert set(reg.presets) == {"webex", "teams"}
-    assert reg.presets["webex"]["base_transport"] == "shoutrrr"
+    assert reg.presets["webex"]["base_transport"] == "outgoing_webhook"
     assert reg.presets["teams"]["base_transport"] == "outgoing_webhook"
 
 
-def test_webex_builds_shoutrrr_generic_url():
+def test_webex_builds_outgoing_webhook_post_with_markdown():
     out = _build("webex", {"webhook_token": "{{ secret('vault://webex') }}"})
-    assert out == {
-        "url_secret": (
-            "generic://webexapis.com/v1/webhooks/incoming/{{ secret('vault://webex') }}"
-            "?template=json&messagekey=text"
-        )
-    }
+    assert out["url"] == (
+        "https://webexapis.com/v1/webhooks/incoming/{{ secret('vault://webex') }}"
+    )
+    assert out["method"] == "POST"
+    payload = out["payload_template"]
+    assert "{{ title }}" in payload and "{{ body }}" in payload
+    parsed = json.loads(payload.replace("{{ title }}", "T").replace("{{ body }}", "B"))
+    assert parsed["markdown"] == "**T**\n\nB"
 
 
 def test_teams_builds_outgoing_webhook_config_with_adaptive_card():
