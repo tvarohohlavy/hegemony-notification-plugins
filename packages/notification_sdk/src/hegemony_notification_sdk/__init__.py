@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from ._version import SDK_ABI_VERSION, __version__
 from .registry import BuildConfigFn, NotificationPluginRegistry, SendFn
+from .services import NotificationSendContext, NotificationServices
 
 #: The entry-point group out-of-tree notification plugins register under.
 NOTIFICATION_PLUGIN_ENTRY_POINT_GROUP = "hegemony.notification_providers"
@@ -22,6 +23,8 @@ __all__ = [
     "SDK_ABI_VERSION",
     "BuildConfigFn",
     "NotificationPluginRegistry",
+    "NotificationSendContext",
+    "NotificationServices",
     "SendFn",
     "__version__",
 ]

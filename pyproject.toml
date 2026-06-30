@@ -25,11 +25,13 @@ package = false
 [tool.uv.workspace]
 members = [
     "packages/notification_sdk",
+    "plugins/notification_core_transports",
     "plugins/notification_shoutrrr_presets",
 ]
 
 [tool.uv.sources]
 hegemony-notification-sdk = { workspace = true }
+hegemony-notification-core-transports = { workspace = true }
 hegemony-notification-shoutrrr-presets = { workspace = true }
 
 [tool.ruff]
@@ -45,6 +47,7 @@ ignore = ["E501"]
 combine-as-imports = true
 known-first-party = [
     "hegemony_notification_sdk",
+    "hegemony_notification_core_transports",
     "hegemony_notification_shoutrrr_presets",
 ]
 

@@ -23,9 +23,12 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import Any, Protocol, runtime_checkable
 
-# Sends one already-formatted notification: ``await send(config, title, body)``. Any secret
-# references in ``config`` are resolved by the transport, never by the SDK or the caller.
-SendFn = Callable[[dict[str, Any], str, str], Awaitable[None]]
+from .services import NotificationSendContext
+
+# Sends one already-formatted notification: ``await send(ctx)``. The context carries the
+# message config/title/body plus injected platform services for secret resolution and
+# template rendering, so a transport never imports platform internals.
+SendFn = Callable[[NotificationSendContext], Awaitable[None]]
 
 # Rewrites a friendly preset config into a base transport's config. Must be pure and
 # synchronous: no I/O and no secret resolution — secret references pass through untouched.

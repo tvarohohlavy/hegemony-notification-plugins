@@ -3,20 +3,24 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 [project]
-name = "hegemony-notification-shoutrrr-presets"
+name = "hegemony-notification-core-transports"
 version = "0.1.0"
-description = "Friendly Shoutrrr-backed notification presets for Hegemony"
+description = "Core notification transports (email, shoutrrr, outgoing_webhook) for Hegemony"
 license = { text = "AGPL-3.0-or-later" }
 requires-python = ">=3.11"
-dependencies = ["hegemony-notification-sdk>=0.2.0,<0.3.0"]
+dependencies = [
+    "hegemony-notification-sdk>=0.2.0,<0.3.0",
+    "aiosmtplib>=3.0.0",
+    "httpx>=0.27.0",
+]
 
 [project.entry-points."hegemony.notification_providers"]
-shoutrrr_presets = "hegemony_notification_shoutrrr_presets:register"
+core_transports = "hegemony_notification_core_transports:register"
 
 [build-system]
 requires = ["uv_build>=0.9,<0.12"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = "hegemony_notification_shoutrrr_presets"
+module-name = "hegemony_notification_core_transports"
 module-root = "src"
