@@ -136,17 +136,10 @@ async def send(ctx: NotificationSendContext) -> None:
         )
     msg["From"] = from_addr
 
-    title_template = config.get("title")
-    if isinstance(title_template, str) and title_template.strip():
-        msg["Subject"] = services.render_message(title_template, title=title, body=body)
-    else:
-        msg["Subject"] = title
-
-    body_template = config.get("body")
-    if isinstance(body_template, str) and body_template.strip():
-        msg.set_content(services.render_message(body_template, title=title, body=body))
-    else:
-        msg.set_content(body)
+    # Title/body (incl. any per-destination override) are finalized by the host before
+    # dispatch; the transport just renders them.
+    msg["Subject"] = title
+    msg.set_content(body)
 
     all_recipients = to_addrs + cc_addrs
     logger.debug(
@@ -175,9 +168,9 @@ CONFIG_SCHEMA = {
         "to": {"type": "array", "items": {"type": "string"}, "title": "To"},
         "cc": {"type": "array", "items": {"type": "string"}, "title": "Cc"},
         "from": {"type": "string", "title": "From (optional)"},
-        "smtp_host_ref": {"type": "string", "format": "secret-ref", "title": "SMTP host"},
-        "smtp_port_ref": {"type": "string", "format": "secret-ref", "title": "SMTP port"},
-        "smtp_username_ref": {"type": "string", "format": "secret-ref", "title": "SMTP username"},
-        "smtp_password_ref": {"type": "string", "format": "secret-ref", "title": "SMTP password"},
+        "smtp_host_ref": {"type": "string", "x_secret_ref": True, "title": "SMTP host"},
+        "smtp_port_ref": {"type": "string", "x_secret_ref": True, "title": "SMTP port"},
+        "smtp_username_ref": {"type": "string", "x_secret_ref": True, "title": "SMTP username"},
+        "smtp_password_ref": {"type": "string", "x_secret_ref": True, "title": "SMTP password"},
     },
 }

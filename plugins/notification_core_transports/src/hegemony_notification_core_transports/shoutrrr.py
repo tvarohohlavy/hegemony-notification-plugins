@@ -51,20 +51,9 @@ async def send(ctx: NotificationSendContext) -> None:
             "(environment variable, file, or dynamic backend)."
         )
 
-    # Splice the rendered title/body into the destination's optional templates.
-    title_template = config.get("title")
-    if isinstance(title_template, str) and title_template.strip():
-        effective_title = services.render_message(title_template, title=title, body=body)
-    else:
-        effective_title = title
-
-    body_template = config.get("body")
-    if isinstance(body_template, str) and body_template.strip():
-        effective_body = services.render_message(body_template, title=title, body=body)
-    else:
-        effective_body = body
-
-    message = f"{effective_title}\n\n{effective_body}"
+    # Title/body (incl. any per-destination override) are finalized by the host before
+    # dispatch; the transport just renders them.
+    message = f"{title}\n\n{body}"
 
     binary = _get_shoutrrr_binary()
     cmd = [binary, "send", "--url", url, "--message", message]
@@ -101,10 +90,8 @@ CONFIG_SCHEMA = {
     "properties": {
         "url_secret": {
             "type": "string",
-            "format": "secret-ref",
+            "x_secret_ref": True,
             "title": "Shoutrrr URL (secret reference)",
         },
-        "title": {"type": "string", "title": "Title template (optional)"},
-        "body": {"type": "string", "title": "Body template (optional)"},
     },
 }
