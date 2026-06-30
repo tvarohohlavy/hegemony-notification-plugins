@@ -96,9 +96,12 @@ def _teams(config: dict[str, Any]) -> dict[str, Any]:
 
 PRESETS: tuple[Preset, ...] = (
     Preset(
-        destination_type="webex",
-        display_name="Webex",
-        description="Post a markdown message to a Webex space via its incoming webhook.",
+        destination_type="webex_incoming_webhook",
+        display_name="Webex (Incoming Webhook)",
+        description=(
+            "Post a markdown message to a Webex space via its incoming webhook. (Distinct "
+            "from the Webex Messages bot API, which uses a bot token + room id.)"
+        ),
         base_transport="outgoing_webhook",
         config_schema={
             "type": "object",
@@ -114,9 +117,12 @@ PRESETS: tuple[Preset, ...] = (
         build_config=_webex,
     ),
     Preset(
-        destination_type="teams",
-        display_name="Microsoft Teams",
-        description="Post an Adaptive Card to a Teams Power Automate workflow webhook.",
+        destination_type="teams_power_automate",
+        display_name="Microsoft Teams (Power Automate)",
+        description=(
+            "Post an Adaptive Card to a Microsoft Teams Power Automate workflow webhook. "
+            "(Distinct from the retired Office 365 connector and the Graph bot methods.)"
+        ),
         base_transport="outgoing_webhook",
         config_schema={
             "type": "object",

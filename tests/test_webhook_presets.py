@@ -32,13 +32,13 @@ def _build(destination_type: str, config: dict[str, Any]) -> dict[str, Any]:
 def test_register_adds_webex_and_teams_over_outgoing_webhook():
     reg = FakeRegistry()
     plugin.register(reg)
-    assert set(reg.presets) == {"webex", "teams"}
-    assert reg.presets["webex"]["base_transport"] == "outgoing_webhook"
-    assert reg.presets["teams"]["base_transport"] == "outgoing_webhook"
+    assert set(reg.presets) == {"webex_incoming_webhook", "teams_power_automate"}
+    assert reg.presets["webex_incoming_webhook"]["base_transport"] == "outgoing_webhook"
+    assert reg.presets["teams_power_automate"]["base_transport"] == "outgoing_webhook"
 
 
 def test_webex_builds_outgoing_webhook_post_with_markdown():
-    out = _build("webex", {"webhook_token": "{{ secret('vault://webex') }}"})
+    out = _build("webex_incoming_webhook", {"webhook_token": "{{ secret('vault://webex') }}"})
     assert out["url"] == (
         "https://webexapis.com/v1/webhooks/incoming/{{ secret('vault://webex') }}"
     )
@@ -50,7 +50,7 @@ def test_webex_builds_outgoing_webhook_post_with_markdown():
 
 
 def test_teams_builds_outgoing_webhook_config_with_adaptive_card():
-    out = _build("teams", {"url": "https://example.powerautomate.com/workflows/x"})
+    out = _build("teams_power_automate", {"url": "https://example.powerautomate.com/workflows/x"})
     assert out["url"] == "https://example.powerautomate.com/workflows/x"
     assert out["method"] == "POST"
     assert out["auth_type"] == "none"
