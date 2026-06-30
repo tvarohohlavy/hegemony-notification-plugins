@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2025-2026 Jakub Trávník <jakub.travnik@gmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+version: "3"
+
+tasks:
+  setup:
+    desc: Install all workspace packages
+    cmds:
+      - uv sync --all-packages
+
+  sync:
+    desc: Install all workspace packages using the lockfile
+    cmds:
+      - uv sync --frozen --all-packages
+
+  lock:
+    desc: Refresh uv.lock
+    cmds:
+      - uv lock
+
+  fmt:
+    desc: Format Python sources
+    cmds:
+      - uv run ruff format packages plugins tests
+
+  fmt:check:
+    desc: Check Python formatting
+    cmds:
+      - uv run ruff format --check packages plugins tests
+
+  ruff:
+    desc: Lint Python sources
+    cmds:
+      - uv run ruff check packages plugins tests
+
+  ty:
+    desc: Type check Python sources
+    cmds:
+      - uv run ty check
+
+  test:
+    desc: Run Python tests
+    cmds:
+      - uv run pytest
+
+  lint:
+    desc: Run lint, formatting, and typecheck
+    cmds:
+      - task: ruff
+      - task: fmt:check
+      - task: ty
