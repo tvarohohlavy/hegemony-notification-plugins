@@ -19,8 +19,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-# A secret-reference string field (the user pastes ``{{ secret('…') }}`` / ``{{ env('…') }}``).
-_SECRET_FIELD = {"type": "string", "format": "secret-ref"}
+# A secret-reference string field: the host UI renders these with the secret/variable
+# picker (``x_secret_ref``) and warns when the value is not a template expression.
+_SECRET_FIELD = {"type": "string", "x_secret_ref": True}
 
 
 @dataclass(frozen=True, slots=True)

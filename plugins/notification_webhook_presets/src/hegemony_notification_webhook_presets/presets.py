@@ -22,8 +22,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-# A secret-reference string field (the user pastes ``{{ secret('…') }}`` / ``{{ env('…') }}``).
-_SECRET_FIELD = {"type": "string", "format": "secret-ref"}
+# A secret-reference string field: the host UI renders these with the secret/variable
+# picker (``x_secret_ref``) and warns when the value is not a template expression.
+_SECRET_FIELD = {"type": "string", "x_secret_ref": True}
 
 # Webex incoming-webhook payload. ``{{ title }}`` / ``{{ body }}`` are rendered (and
 # JSON-escaped) by the outgoing_webhook transport; Webex renders the ``markdown`` field.
@@ -130,7 +131,7 @@ PRESETS: tuple[Preset, ...] = (
             "properties": {
                 "url": {
                     "type": "string",
-                    "format": "secret-ref",
+                    "x_secret_ref": True,
                     "title": "Power Automate workflow URL",
                     "description": (
                         "The 'When a Teams webhook request is received' trigger URL. May be a "
